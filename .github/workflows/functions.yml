@@ -1,0 +1,50 @@
+name: "Functions: Lint, Typecheck & Test"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "functions/**"
+      - "packages/shared/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "functions/**"
+      - "packages/shared/**"
+
+jobs:
+  functions-ci:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared package
+        run: pnpm --filter @ppt/shared run build
+
+      - name: Lint functions
+        run: pnpm --filter @ppt/functions run lint
+
+      - name: Typecheck functions
+        run: pnpm --filter @ppt/functions run build
+
+      - name: Test shared
+        run: pnpm --filter @ppt/shared run test
+
+      - name: Test functions
+        run: pnpm --filter @ppt/functions run test

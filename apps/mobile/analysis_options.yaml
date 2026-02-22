@@ -1,0 +1,31 @@
+# Strict analysis for team collaboration
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  errors:
+    missing_return: error
+    missing_required_param: error
+    dead_code: warning
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+
+linter:
+  rules:
+    # Error prevention
+    avoid_print: true
+    avoid_relative_lib_imports: true
+    prefer_const_constructors: true
+    prefer_const_declarations: true
+    prefer_final_fields: true
+    prefer_final_locals: true
+    unnecessary_await_in_return: true
+
+    # Style
+    always_declare_return_types: true
+    annotate_overrides: true
+    prefer_single_quotes: true
+    sort_constructors_first: true
+    sort_unnamed_constructors_first: true
+    unawaited_futures: true
+    unnecessary_lambdas: true

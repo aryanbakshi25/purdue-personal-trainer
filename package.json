@@ -1,0 +1,25 @@
+{
+  "name": "purdue-personal-trainer",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Purdue Personal Trainer – AI-powered fitness planning for Purdue students",
+  "scripts": {
+    "lint": "pnpm -r run lint",
+    "format": "pnpm -r run format",
+    "format:check": "pnpm -r run format:check",
+    "test": "pnpm -r run test",
+    "build": "pnpm -r run build",
+    "emulators": "firebase emulators:start --import=.firebase/emulator-data --export-on-exit=.firebase/emulator-data",
+    "emulators:fresh": "firebase emulators:start",
+    "deploy:functions": "firebase deploy --only functions",
+    "deploy:rules": "firebase deploy --only firestore:rules",
+    "flutter:analyze": "cd apps/mobile && flutter analyze",
+    "flutter:test": "cd apps/mobile && flutter test",
+    "flutter:run": "cd apps/mobile && flutter run"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@9.15.4"
+}
