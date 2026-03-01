@@ -27,7 +27,6 @@ class _ScheduleEditScreenState extends ConsumerState<ScheduleEditScreen> {
   TimeOfDay _endTime = const TimeOfDay(hour: 10, minute: 0);
   String _category = 'class';
   bool _isRecurring = true;
-  bool _isSaving = false;
 
   bool get _isNew => widget.blockId == null;
 
@@ -96,10 +95,8 @@ class _ScheduleEditScreenState extends ConsumerState<ScheduleEditScreen> {
     }
   }
 
-  Future<void> _save() async {
+  void _save() {
     if (!_formKey.currentState!.validate()) return;
-
-    setState(() => _isSaving = true);
 
     final block = ScheduleBlock(
       id: widget.blockId ?? const Uuid().v4(),
@@ -114,23 +111,13 @@ class _ScheduleEditScreenState extends ConsumerState<ScheduleEditScreen> {
       isRecurring: _isRecurring,
     );
 
-    try {
-      final service = ref.read(scheduleServiceProvider);
-      if (_isNew) {
-        await service.addBlock(block);
-      } else {
-        await service.updateBlock(block);
-      }
-      if (mounted) context.pop();
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save: $e')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isSaving = false);
+    final service = ref.read(scheduleServiceProvider);
+    if (_isNew) {
+      service.addBlock(block);
+    } else {
+      service.updateBlock(block);
     }
+    context.pop();
   }
 
   Future<void> _delete() async {
@@ -266,14 +253,8 @@ class _ScheduleEditScreenState extends ConsumerState<ScheduleEditScreen> {
             SizedBox(
               height: 48,
               child: FilledButton(
-                onPressed: _isSaving ? null : _save,
-                child: _isSaving
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(_isNew ? 'Add Block' : 'Save Changes'),
+                onPressed: _save,
+                child: Text(_isNew ? 'Add Block' : 'Save Changes'),
               ),
             ),
           ],
