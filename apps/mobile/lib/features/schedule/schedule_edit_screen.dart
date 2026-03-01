@@ -199,7 +199,7 @@ class _ScheduleEditScreenState extends ConsumerState<ScheduleEditScreen> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
-              initialValue: _dayOfWeek,
+              value: _dayOfWeek,
               decoration: const InputDecoration(labelText: 'Day'),
               items: _days
                   .map((d) => DropdownMenuItem(
@@ -246,7 +246,7 @@ class _ScheduleEditScreenState extends ConsumerState<ScheduleEditScreen> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
-              initialValue: _category,
+              value: _category,
               decoration: const InputDecoration(labelText: 'Category'),
               items: _categories
                   .map((c) => DropdownMenuItem(

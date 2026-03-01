@@ -34,7 +34,7 @@ class ScheduleTab extends ConsumerWidget {
                   const Text('Add your classes, work, and other commitments.'),
                   const SizedBox(height: 16),
                   FilledButton.icon(
-                    onPressed: () => context.go('/schedule/new'),
+                    onPressed: () => context.push('/schedule/new'),
                     icon: const Icon(Icons.add),
                     label: const Text('Add Schedule Block'),
                   ),
@@ -82,7 +82,7 @@ class ScheduleTab extends ConsumerWidget {
                         trailing: IconButton(
                           icon: const Icon(Icons.edit),
                           onPressed: () =>
-                              context.go('/schedule/edit/${block.id}'),
+                              context.push('/schedule/edit/${block.id}'),
                         ),
                       ),
                     ),
@@ -97,7 +97,7 @@ class ScheduleTab extends ConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.go('/schedule/new'),
+        onPressed: () => context.push('/schedule/new'),
         child: const Icon(Icons.add),
       ),
     );
