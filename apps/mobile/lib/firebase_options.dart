@@ -1,15 +1,3 @@
-// ============================================================
-// MOCK Firebase Options for LOCAL DEVELOPMENT ONLY.
-// ============================================================
-// This file lets the app boot against Firebase emulators without
-// a real Firebase project config. Replace this with the real
-// generated file by running:
-//
-//   flutterfire configure --project=scab-purdue
-//
-// DO NOT deploy to production with this file.
-// ============================================================
-
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, TargetPlatform;
@@ -22,25 +10,26 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       default:
-        return android; // fallback for desktop/web during dev
+        return ios;
     }
   }
 
-  // These are placeholder values — the emulators don't validate them.
+  // TODO: Add real Android config once an Android app is registered in Firebase.
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'fake-api-key-for-emulator',
-    appId: '1:000000000000:android:0000000000000000000000',
-    messagingSenderId: '000000000000',
+    appId: '1:995459861625:android:0000000000000000',
+    messagingSenderId: '995459861625',
     projectId: 'scab-purdue',
-    storageBucket: 'scab-purdue.appspot.com',
+    storageBucket: 'scab-purdue.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'fake-api-key-for-emulator',
-    appId: '1:000000000000:ios:0000000000000000000000',
-    messagingSenderId: '000000000000',
+    apiKey: 'AIzaSyDhXJR7VSZoCBULQ10RMoO9oRPxm-T0W60',
+    appId: '1:995459861625:ios:7870b8d176d85cf31b98a8',
+    messagingSenderId: '995459861625',
     projectId: 'scab-purdue',
-    storageBucket: 'scab-purdue.appspot.com',
-    iosBundleId: 'com.purdue.personalTrainer',
+    storageBucket: 'scab-purdue.firebasestorage.app',
+    iosClientId: '995459861625-1mn5nvsjq8sq9e57qjttf2krp65t4bdc.apps.googleusercontent.com',
+    iosBundleId: 'com.purdue.personaltrainer.purduePersonalTrainer',
   );
 }

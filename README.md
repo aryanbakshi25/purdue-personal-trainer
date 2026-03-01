@@ -34,9 +34,10 @@ See [docs/SETUP.md](docs/SETUP.md) for detailed instructions.
 
 ## Documentation
 
-- [Setup Guide](docs/SETUP.md) – local development environment
+- **[Developer Setup Guide](docs/DEV-SETUP.md)** – step-by-step instructions for Mac, Windows, and Linux
 - [Architecture](docs/ARCHITECTURE.md) – system design and data flow
 - [Contributing](docs/CONTRIBUTING.md) – branching, PRs, code style
+- **[Task Board](docs/TASKS.md)** – pick a task and start building
 
 ## Tech Stack
 

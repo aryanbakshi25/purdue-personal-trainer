@@ -1,5 +1,11 @@
 # Contributing Guide
 
+## Getting Started
+
+1. Follow the [Developer Setup Guide](./DEV-SETUP.md) to get the app running locally.
+2. Pick a task from the [Task Board](./TASKS.md).
+3. Create a branch, build the feature, and open a PR.
+
 ## Branching Strategy
 
 ```
@@ -12,7 +18,15 @@ main                 ← production-ready, protected
 
 - **main**: Protected. Deploys to production. Merge only via PR from `dev`.
 - **dev**: Integration branch. All feature branches merge here.
-- **Feature branches**: Named `feat/<short-description>`, `fix/<short-description>`, or `chore/<short-description>`.
+- **Feature branches**: Create from `dev`, merge back into `dev`.
+
+### Creating Your Branch
+
+```bash
+git checkout dev
+git pull origin dev
+git checkout -b feat/your-task-name
+```
 
 ### Branch Naming
 
@@ -52,9 +66,9 @@ Implementation approach.
 
 ## Test Plan
 
-- [ ] Unit tests pass
-- [ ] Tested on emulators
-- [ ] Tested on physical device (if UI change)
+- [ ] Unit tests pass (`flutter test`)
+- [ ] Tested on emulator with Firebase emulators running
+- [ ] Screenshots attached (if UI change)
 
 ## Screenshots (if applicable)
 ```
@@ -84,6 +98,49 @@ Implementation approach.
 - No `console.log` in Flutter (use `debugPrint` or `logger`).
 - No secrets in code. Ever. Use Secret Manager or environment variables.
 - No `// TODO` without a linked issue number: `// TODO(#42): implement ICS parser`.
+
+## Development Workflow
+
+### 1. Start the emulators
+
+```bash
+pnpm emulators
+```
+
+### 2. Run the app
+
+```bash
+cd apps/mobile
+flutter run --dart-define=API_BASE_URL=http://127.0.0.1:5001/scab-purdue/us-central1/api
+```
+
+### 3. Sign in
+
+Use **"Sign in with Emulator"** on the login screen for local development.
+
+### 4. Make your changes
+
+Edit the relevant files. Flutter hot-reload (`r` in terminal) applies most Dart changes instantly. Press `R` for a full restart if state gets stale.
+
+### 5. Test
+
+```bash
+# Flutter tests
+cd apps/mobile && flutter test
+
+# Node.js tests (if you changed functions or shared schemas)
+pnpm test
+```
+
+### 6. Open a PR
+
+```bash
+git add .
+git commit -m "feat: your change description"
+git push -u origin feat/your-task-name
+```
+
+Then open a PR on GitHub targeting the `dev` branch.
 
 ## Review Expectations
 
@@ -124,26 +181,25 @@ pnpm test                    # Node.js tests
 pnpm flutter:test            # Flutter tests
 ```
 
-## Good First Issues
+## Project Structure Quick Reference
 
-If you're new to the project, look for issues labeled `good-first-issue`. Here are some starter tasks:
+```
+apps/mobile/lib/
+├── app/              App root widget
+├── features/         Feature modules
+│   ├── auth/         Login screen
+│   ├── today/        Today tab (plan + facility usage)
+│   ├── schedule/     Schedule CRUD
+│   ├── chat/         AI chat assistant
+│   └── profile/      User profile
+├── models/           Dart data models
+├── providers/        Riverpod providers (state management)
+├── services/         API client
+└── shared/           Theme, routing, shared widgets
 
-1. **Add a "category" icon mapper** – Create a utility that maps schedule block categories to Material icons (partially exists in `schedule_tab.dart`; extract to a shared utility).
-
-2. **Add form validation to schedule edit** – Ensure end time is after start time. Show an error if they overlap.
-
-3. **Display today's plan items** – Replace the placeholder in `today_tab.dart` with actual plan items loaded from Firestore.
-
-4. **Add a loading skeleton** – Replace `CircularProgressIndicator` with shimmer/skeleton loading in the Today tab.
-
-5. **Implement fitness level selector** – Add a bottom sheet or dialog in the Profile tab to select beginner/intermediate/advanced.
-
-6. **Add unit tests for Zod schemas** – Expand test coverage in `packages/shared/src/schemas.test.ts` with edge cases.
-
-7. **Add dark mode toggle** – Add a switch in the Profile tab that overrides system theme.
-
-8. **Format facility usage timestamps** – Show "Updated 3 min ago" instead of raw ISO strings.
-
-## Setting Up Your Dev Environment
-
-See [SETUP.md](./SETUP.md) for detailed instructions.
+functions/src/
+├── routes/           Express route handlers
+├── middleware/        Auth middleware
+├── services/         Gemini, plan generator, facility scraper
+└── index.ts          Entry point
+```

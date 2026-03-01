@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,6 +27,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     } catch (e) {
       setState(() {
         _error = 'Sign-in failed. Please try again.';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _handleEmulatorSignIn() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final authService = ref.read(authServiceProvider);
+      await authService.signInWithEmulator();
+    } catch (e) {
+      setState(() {
+        _error = 'Emulator sign-in failed: $e';
       });
     } finally {
       if (mounted) {
@@ -103,6 +126,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   color: theme.colorScheme.onSurface.withAlpha(102),
                 ),
               ),
+              if (kDebugMode) ...[
+                const SizedBox(height: 32),
+                const Divider(),
+                const SizedBox(height: 8),
+                Text(
+                  'Development Only',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurface.withAlpha(102),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: OutlinedButton.icon(
+                    onPressed: _isLoading ? null : _handleEmulatorSignIn,
+                    icon: const Icon(Icons.bug_report),
+                    label: const Text('Sign in with Emulator'),
+                  ),
+                ),
+              ],
             ],
           ),
         ),

@@ -34,6 +34,28 @@ class AuthService {
     return _auth.signInWithCredential(credential);
   }
 
+  /// Sign in with email/password against the Firebase Auth emulator.
+  /// Creates the account on first use, signs in on subsequent uses.
+  Future<UserCredential> signInWithEmulator({
+    String email = 'test@purdue.edu',
+    String password = 'testtest',
+  }) async {
+    try {
+      return await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        return await _auth.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+      }
+      rethrow;
+    }
+  }
+
   Future<void> signOut() async {
     await Future.wait([
       _auth.signOut(),
