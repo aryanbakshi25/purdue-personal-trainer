@@ -61,7 +61,7 @@ Pick a task, assign yourself by adding your name to the **Owner** column, and cr
 |-------|---------|
 | **Branch** | `feat/fitness-goals-selector` |
 | **Difficulty** | Medium |
-| **Owner** | _unclaimed_ |
+| **Owner** | Aaditya Panjabi |
 | **Files** | `lib/features/profile/profile_tab.dart` |
 
 **What to do:** Add a bottom sheet in the Profile tab that lets users select their fitness level (beginner / intermediate / advanced) and goals (lose fat / build muscle / maintain / recomp) using `ChoiceChip` widgets. Save selections to the `UserProfile` document in Firestore. Coordinate with Task 3 owner since this depends on profile persistence.
