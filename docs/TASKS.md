@@ -75,7 +75,7 @@ Pick a task, assign yourself by adding your name to the **Owner** column, and cr
 |-------|---------|
 | **Branch** | `feat/wire-generate-plan` |
 | **Difficulty** | Medium |
-| **Owner** | _unclaimed_ |
+| **Owner** | Amrith |
 | **Files** | `lib/features/today/today_tab.dart`, create `lib/providers/plan_provider.dart` |
 
 **What to do:** The Today tab has a "Generate Plan" button that doesn't do anything. Wire it to call `POST /api/plan/generate` via the existing `ApiClient`. Display the returned plan items in a `ListView`. The `DailyPlan` and `PlanItem` models already exist in `lib/models/daily_plan.dart`. Also load today's plan from Firestore on tab open if one already exists.
