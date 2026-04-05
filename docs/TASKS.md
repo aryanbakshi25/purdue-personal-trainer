@@ -33,7 +33,7 @@ Pick a task, assign yourself by adding your name to the **Owner** column, and cr
 |-------|---------|
 | **Branch** | `feat/schedule-form-validation` |
 | **Difficulty** | Easy |
-| **Owner** | _unclaimed_ |
+| **Owner** | Aastha Patel |
 | **Files** | `lib/features/schedule/schedule_edit_screen.dart` |
 
 **What to do:** Add validation to the schedule edit form: end time must be after start time (show a `SnackBar` error if not), and title cannot be empty (already partially done). Also prevent saving if the time range is invalid.
