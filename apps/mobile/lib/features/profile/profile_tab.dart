@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -170,6 +172,50 @@ class ProfileTab extends ConsumerWidget {
               icon: const Icon(Icons.logout),
               label: const Text('Sign Out'),
             ),
+            if (kDebugMode) ...[
+              const SizedBox(height: 32),
+              const Divider(),
+              const SizedBox(height: 8),
+              Text(
+                'Development Only',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurface.withAlpha(102),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: () async {
+                  final confirmed = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Reset Onboarding?'),
+                      content: const Text(
+                        'This will delete your profile and send you back to onboarding.',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Cancel'),
+                        ),
+                        FilledButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text('Reset'),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirmed == true && user != null) {
+                    await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(user.uid)
+                        .delete();
+                  }
+                },
+                icon: const Icon(Icons.restart_alt),
+                label: const Text('Re-run Onboarding'),
+              ),
+            ],
           ],
         );
       },
