@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   ScheduleBlock,
   UserProfile,
+  WorkoutSplit,
   DailyPlan,
   ChatRequest,
   FacilityUsageItem,
@@ -69,6 +70,76 @@ describe("UserProfile", () => {
       updatedAt: "2025-01-15T10:00:00Z",
     });
     expect(result.fitnessLevel).toBe("beginner");
+  });
+
+  it("accepts athlete fitness level", () => {
+    const result = UserProfile.safeParse({
+      uid: "abc123",
+      displayName: "Jane Doe",
+      email: "jane@purdue.edu",
+      fitnessLevel: "athlete",
+      createdAt: "2025-01-15T10:00:00Z",
+      updatedAt: "2025-01-15T10:00:00Z",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.fitnessLevel).toBe("athlete");
+    }
+  });
+
+  it("accepts valid workoutSplit", () => {
+    const result = UserProfile.safeParse({
+      uid: "abc123",
+      displayName: "John Doe",
+      email: "jdoe@purdue.edu",
+      workoutSplit: "ppl",
+      createdAt: "2025-01-15T10:00:00Z",
+      updatedAt: "2025-01-15T10:00:00Z",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.workoutSplit).toBe("ppl");
+    }
+  });
+
+  it("allows omitted workoutSplit", () => {
+    const result = UserProfile.safeParse({
+      uid: "abc123",
+      displayName: "John Doe",
+      email: "jdoe@purdue.edu",
+      createdAt: "2025-01-15T10:00:00Z",
+      updatedAt: "2025-01-15T10:00:00Z",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.workoutSplit).toBeUndefined();
+    }
+  });
+
+  it("rejects invalid workoutSplit", () => {
+    const result = UserProfile.safeParse({
+      uid: "abc123",
+      displayName: "John Doe",
+      email: "jdoe@purdue.edu",
+      workoutSplit: "invalid_split",
+      createdAt: "2025-01-15T10:00:00Z",
+      updatedAt: "2025-01-15T10:00:00Z",
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("WorkoutSplit", () => {
+  it("accepts all valid split values", () => {
+    for (const split of ["ppl", "upper_lower", "full_body", "bro_split"]) {
+      expect(WorkoutSplit.safeParse(split).success).toBe(true);
+    }
+  });
+
+  it("rejects invalid split values", () => {
+    expect(WorkoutSplit.safeParse("push_pull").success).toBe(false);
+    expect(WorkoutSplit.safeParse("").success).toBe(false);
+    expect(WorkoutSplit.safeParse(123).success).toBe(false);
   });
 });
 
