@@ -95,3 +95,25 @@ Wire the profile tab to display real Firestore data from the `userProfileProvide
 - The profile header (avatar, name, email) still reads from `FirebaseAuth.currentUser`, not Firestore. This is intentional — those values come from Google Sign-In and stay in sync automatically.
 - The TODO comments on each ListTile's `onTap` are preserved for future editing features.
 - Goals are displayed as a comma-separated string with human-readable labels (e.g., "Build Muscle, Lose Weight") in priority order (matching the order set during onboarding).
+
+---
+
+## Additional Feature: Re-run Onboarding (Debug Only)
+
+Added a "Re-run Onboarding" button visible only in `kDebugMode`, styled to match the login screen's "Development Only" section:
+- Appears below the Sign Out button with a divider and "Development Only" label
+- Shows a confirmation dialog before proceeding
+- Deletes the `users/{uid}` doc from Firestore
+- The router's `userProfileProvider` stream detects the deletion → profile becomes `null` → redirect fires → user lands on onboarding
+
+---
+
+## Considerations
+
+1. **`profileAsync.when()` replaces the entire ListView.** When profile is loading, the user sees a spinner instead of the profile header. This is acceptable since the profile stream resolves quickly after auth, but if it becomes a UX issue, could show the Auth-based header immediately and only use `.when()` for the settings cards section.
+
+2. **Label maps are top-level constants.** Kept outside the widget class for readability. If these grow or need localization, they should move to a shared constants file or i18n system.
+
+3. **Fallback for unknown values.** If Firestore contains a fitness level or goal value not in the label map (e.g., from a newer schema version), the raw string is displayed as-is rather than crashing. This is the `?? profile?.fitnessLevel ?? 'Not set'` chain.
+
+4. **Lint warning on profile tab.** There's a `user != null` check inside the `data` callback where `user` is already guaranteed non-null (we return early at the top). This produces a "condition is always true" info diagnostic — cosmetic only, not a bug.
