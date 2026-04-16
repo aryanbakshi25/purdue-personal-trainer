@@ -57,29 +57,44 @@ class AppTheme {
 
   static final ThemeData dark = ThemeData(
     useMaterial3: true,
+    brightness: Brightness.dark,
     colorScheme: ColorScheme.fromSeed(
       seedColor: _purdueGold,
       primary: _purdueGold,
       onPrimary: _purdueBlack,
       secondary: _purdueRailwayGray,
-      surface: const Color(0xFF1A1A1A),
+      onSecondary: _purdueBlack,
+      surface: const Color(0xFF121212),
+      onSurface: Colors.white,
       brightness: Brightness.dark,
     ),
     appBarTheme: const AppBarTheme(
       centerTitle: true,
       elevation: 0,
+      backgroundColor: _purdueBlack,
+      foregroundColor: _purdueGold,
     ),
     navigationBarTheme: NavigationBarThemeData(
       indicatorColor: _purdueGold.withAlpha(77),
+      backgroundColor: _purdueBlack,
+      labelTextStyle: WidgetStateProperty.all(
+        const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.white),
+      ),
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: _purdueGold,
+      foregroundColor: _purdueBlack,
     ),
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
       ),
       filled: true,
+      fillColor: const Color(0xFF1E1E1E),
     ),
     cardTheme: CardThemeData(
       elevation: 1,
+      color: const Color(0xFF1E1E1E),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
