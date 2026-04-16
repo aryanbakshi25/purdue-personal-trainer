@@ -4,22 +4,49 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/login_screen.dart';
 import '../../features/home/home_screen.dart';
+import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/schedule/schedule_screen.dart';
 import '../../features/schedule/schedule_edit_screen.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/user_profile_provider.dart';
+
+/// Notifier that triggers GoRouter redirect when auth or profile state changes.
+class _RouterNotifier extends ChangeNotifier {
+  _RouterNotifier(this._ref) {
+    _ref.listen(authStateProvider, (_, __) => notifyListeners());
+    _ref.listen(userProfileProvider, (_, __) => notifyListeners());
+  }
+
+  final Ref _ref;
+}
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
+  final profileState = ref.watch(userProfileProvider);
+  final notifier = _RouterNotifier(ref);
 
   return GoRouter(
     initialLocation: '/home',
     debugLogDiagnostics: true,
+    refreshListenable: notifier,
     redirect: (context, state) {
       final isLoggedIn = authState.valueOrNull != null;
       final isOnLogin = state.matchedLocation == '/login';
+      final isOnOnboarding = state.matchedLocation == '/onboarding';
 
+      // Not logged in → login
       if (!isLoggedIn && !isOnLogin) return '/login';
-      if (isLoggedIn && isOnLogin) return '/home';
+
+      if (isLoggedIn) {
+        // Still loading profile → don't redirect yet
+        if (profileState.isLoading) return isOnLogin ? '/onboarding' : null;
+
+        final hasProfile = profileState.valueOrNull != null;
+
+        if (!hasProfile && !isOnOnboarding) return '/onboarding';
+        if (hasProfile && (isOnOnboarding || isOnLogin)) return '/home';
+      }
+
       return null;
     },
     routes: [
@@ -27,6 +54,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/login',
         name: 'login',
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        name: 'onboarding',
+        builder: (context, state) => const OnboardingScreen(),
       ),
       GoRoute(
         path: '/home',
