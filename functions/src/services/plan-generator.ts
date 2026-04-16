@@ -135,20 +135,49 @@ function buildWorkoutItem(
   duration: number,
   profile: UserProfileType
 ): PlanItemType {
-  const workouts: Record<string, string> = {
-    beginner: "Full body workout – bodyweight exercises",
-    intermediate: "Push/Pull split – moderate intensity",
-    advanced: "Compound lifts – progressive overload",
-  };
+  const activity = profile.workoutSplit
+    ? getWorkoutForSplit(profile.workoutSplit, profile.fitnessLevel)
+    : getFallbackWorkout(profile.fitnessLevel);
 
   return {
     time,
     duration,
-    activity: workouts[profile.fitnessLevel] ?? workouts["beginner"],
+    activity,
     category: "gym",
     location: "CoRec Weight Room",
     notes: profile.goals.length > 0
       ? `Goals: ${profile.goals.join(", ")}`
       : undefined,
   };
+}
+
+/** Maps workout split + fitness level to a descriptive activity string. */
+function getWorkoutForSplit(split: string, fitnessLevel: string): string {
+  const intensityLabel: Record<string, string> = {
+    beginner: "light weight, focus on form",
+    intermediate: "moderate intensity",
+    advanced: "progressive overload",
+    athlete: "high intensity, periodized",
+  };
+  const intensity = intensityLabel[fitnessLevel] ?? intensityLabel["beginner"];
+
+  const splitWorkouts: Record<string, string> = {
+    ppl: `Push / Pull / Legs – ${intensity}`,
+    upper_lower: `Upper / Lower split – ${intensity}`,
+    full_body: `Full body workout – ${intensity}`,
+    bro_split: `Muscle group focus (bro split) – ${intensity}`,
+  };
+
+  return splitWorkouts[split] ?? `Workout session – ${intensity}`;
+}
+
+/** Fallback when no workout split is set (legacy profiles). */
+function getFallbackWorkout(fitnessLevel: string): string {
+  const workouts: Record<string, string> = {
+    beginner: "Full body workout – bodyweight exercises",
+    intermediate: "Push/Pull split – moderate intensity",
+    advanced: "Compound lifts – progressive overload",
+    athlete: "Sport-specific training – high intensity",
+  };
+  return workouts[fitnessLevel] ?? workouts["beginner"];
 }

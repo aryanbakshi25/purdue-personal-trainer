@@ -19,7 +19,7 @@ Pick a task, assign yourself by adding your name to the **Owner** column, and cr
 |-------|---------|
 | **Branch** | `feat/category-icon-mapper` |
 | **Difficulty** | Easy |
-| **Owner** | _unclaimed_ |
+| **Owner** | Neha Jain |
 | **Files** | Create `lib/shared/utils/category_icons.dart`, update `lib/features/schedule/schedule_tab.dart` |
 
 **What to do:** There's inline icon-mapping logic in `schedule_tab.dart` (the `_categoryIcon` method). Extract it into a shared utility function `IconData iconForCategory(String category)` that maps categories (`class`, `club`, `study`, `workout`, `work`, `meal`, `other`) to Material Icons. Import and use it everywhere schedule categories appear.
@@ -33,7 +33,7 @@ Pick a task, assign yourself by adding your name to the **Owner** column, and cr
 |-------|---------|
 | **Branch** | `feat/schedule-form-validation` |
 | **Difficulty** | Easy |
-| **Owner** | _unclaimed_ |
+| **Owner** | Aastha Patel |
 | **Files** | `lib/features/schedule/schedule_edit_screen.dart` |
 
 **What to do:** Add validation to the schedule edit form: end time must be after start time (show a `SnackBar` error if not), and title cannot be empty (already partially done). Also prevent saving if the time range is invalid.
@@ -47,7 +47,7 @@ Pick a task, assign yourself by adding your name to the **Owner** column, and cr
 |-------|---------|
 | **Branch** | `feat/profile-persistence` |
 | **Difficulty** | Medium |
-| **Owner** | _unclaimed_ |
+| **Owner** | Sid S. |
 | **Files** | `lib/features/profile/profile_tab.dart`, create `lib/providers/profile_provider.dart`, `lib/models/user_profile.dart` |
 
 **What to do:** When a user signs in, create a `UserProfile` document in Firestore at `users/{uid}` (if it doesn't already exist). Add a `StreamProvider` that listens to `users/{uid}` and displays the profile data. The `UserProfile` model already exists in `lib/models/user_profile.dart`.
@@ -75,7 +75,7 @@ Pick a task, assign yourself by adding your name to the **Owner** column, and cr
 |-------|---------|
 | **Branch** | `feat/wire-generate-plan` |
 | **Difficulty** | Medium |
-| **Owner** | _unclaimed_ |
+| **Owner** | Amrith Pusala |
 | **Files** | `lib/features/today/today_tab.dart`, create `lib/providers/plan_provider.dart` |
 
 **What to do:** The Today tab has a "Generate Plan" button that doesn't do anything. Wire it to call `POST /api/plan/generate` via the existing `ApiClient`. Display the returned plan items in a `ListView`. The `DailyPlan` and `PlanItem` models already exist in `lib/models/daily_plan.dart`. Also load today's plan from Firestore on tab open if one already exists.
@@ -103,7 +103,7 @@ Pick a task, assign yourself by adding your name to the **Owner** column, and cr
 |-------|---------|
 | **Branch** | `feat/onboarding-flow` |
 | **Difficulty** | Hard |
-| **Owner** | _unclaimed_ |
+| **Owner** | Sid Songirkar |
 | **Files** | Create `lib/features/onboarding/onboarding_screen.dart`, update `lib/shared/routing/router.dart` |
 
 **What to do:** Build a 3-step onboarding screen using `PageView`: (1) Welcome + fitness level, (2) Goal selection, (3) Workout split preference (PPL / Upper-Lower / Full Body / Bro Split). On completion, save to Firestore and route to home. Add a GoRouter redirect so first-time users (no `UserProfile` doc) go to onboarding. This is a bigger task — consider pairing up.
@@ -147,7 +147,7 @@ Pick a task, assign yourself by adding your name to the **Owner** column, and cr
 |-------|---------|
 | **Branch** | `feat/ics-import` |
 | **Difficulty** | Medium |
-| **Owner** | _unclaimed_ |
+| **Owner** | Sid Songirkar |
 | **Files** | `functions/src/routes/schedule.ts`, `packages/shared/src/schemas.ts` |
 
 **What to do:** Implement the `POST /api/schedule/import-ics` endpoint that currently returns 501. Use the `ical.js` npm package to parse an ICS string, extract `VEVENT` entries, map them to `ScheduleBlock` objects (title from `SUMMARY`, day from `DTSTART`, times from `DTSTART`/`DTEND`), validate with Zod, and batch-write to Firestore under `users/{uid}/scheduleBlocks/`. Write unit tests. This is a **TypeScript/Node.js** task — no Flutter needed.
