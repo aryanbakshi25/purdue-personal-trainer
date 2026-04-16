@@ -28,6 +28,18 @@ const _splitLabels = {
   'bro_split': 'Bro Split',
 };
 
+const _fitnessLevels = ['beginner', 'intermediate', 'advanced', 'athlete'];
+const _goalIds = [
+  'lose_weight',
+  'build_muscle',
+  'improve_endurance',
+  'stay_active',
+  'improve_flexibility',
+];
+
+String _fitnessLevelLabel(String id) => _fitnessLevelLabels[id] ?? id;
+String _goalLabel(String id) => _goalLabels[id] ?? id;
+
 class ProfileTab extends ConsumerWidget {
   const ProfileTab({super.key});
 
@@ -45,15 +57,14 @@ class ProfileTab extends ConsumerWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, _) => Center(child: Text('Error loading profile: $error')),
       data: (profile) {
-        final fitnessLabel = _fitnessLevelLabels[profile?.fitnessLevel] ??
-            profile?.fitnessLevel ??
-            'Not set';
+        final fitnessLevel = profile?.fitnessLevel ?? 'beginner';
+        final goals = profile?.goals ?? <String>[];
 
-        final goalsLabel = profile != null && profile.goals.isNotEmpty
-            ? profile.goals
-                .map((g) => _goalLabels[g] ?? g)
-                .join(', ')
-            : 'No goals set';
+        final fitnessLabel = _fitnessLevelLabels[fitnessLevel] ?? fitnessLevel;
+
+        final goalsLabel = goals.isNotEmpty
+            ? goals.map(_goalLabel).join(', ')
+            : 'Tap to set fitness goals';
 
         final splitLabel = profile?.workoutSplit != null
             ? _splitLabels[profile!.workoutSplit!] ?? profile.workoutSplit!
@@ -110,9 +121,12 @@ class ProfileTab extends ConsumerWidget {
                     title: const Text('Fitness Level'),
                     subtitle: Text(fitnessLabel),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      // TODO: Edit fitness level
-                    },
+                    onTap: () => _showFitnessGoalsSheet(
+                      context,
+                      ref,
+                      initialFitnessLevel: fitnessLevel,
+                      initialGoals: goals,
+                    ),
                   ),
                   const Divider(height: 1),
                   ListTile(
@@ -120,9 +134,12 @@ class ProfileTab extends ConsumerWidget {
                     title: const Text('Goals'),
                     subtitle: Text(goalsLabel),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      // TODO: Edit goals
-                    },
+                    onTap: () => _showFitnessGoalsSheet(
+                      context,
+                      ref,
+                      initialFitnessLevel: fitnessLevel,
+                      initialGoals: goals,
+                    ),
                   ),
                   const Divider(height: 1),
                   ListTile(
@@ -219,6 +236,167 @@ class ProfileTab extends ConsumerWidget {
           ],
         );
       },
+    );
+  }
+}
+
+Future<void> _showFitnessGoalsSheet(
+  BuildContext context,
+  WidgetRef ref, {
+  required String initialFitnessLevel,
+  required List<String> initialGoals,
+}) async {
+  final user = ref.read(currentUserProvider);
+  if (user == null) return;
+
+  await showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    showDragHandle: true,
+    builder: (ctx) {
+      return _FitnessGoalsSheet(
+        uid: user.uid,
+        initialFitnessLevel: initialFitnessLevel,
+        initialGoals: initialGoals,
+      );
+    },
+  );
+}
+
+class _FitnessGoalsSheet extends StatefulWidget {
+  const _FitnessGoalsSheet({
+    required this.uid,
+    required this.initialFitnessLevel,
+    required this.initialGoals,
+  });
+
+  final String uid;
+  final String initialFitnessLevel;
+  final List<String> initialGoals;
+
+  @override
+  State<_FitnessGoalsSheet> createState() => _FitnessGoalsSheetState();
+}
+
+class _FitnessGoalsSheetState extends State<_FitnessGoalsSheet> {
+  late String _fitnessLevel;
+  late Set<String> _goals;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fitnessLevel = widget.initialFitnessLevel;
+    _goals = Set<String>.from(widget.initialGoals);
+  }
+
+  Future<void> _save() async {
+    setState(() => _saving = true);
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(widget.uid).set(
+        {
+          'fitnessLevel': _fitnessLevel,
+          'goals': _goals.toList(),
+          'updatedAt': DateTime.now().toUtc().toIso8601String(),
+        },
+        SetOptions(merge: true),
+      );
+      if (mounted) Navigator.of(context).pop();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not save: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 8,
+        bottom: bottomInset + 24,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Fitness level',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _fitnessLevels.map((id) {
+              return ChoiceChip(
+                label: Text(_fitnessLevelLabel(id)),
+                selected: _fitnessLevel == id,
+                onSelected: (_) {
+                  setState(() => _fitnessLevel = id);
+                },
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Goals',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Select one or more',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurface.withAlpha(153),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _goalIds.map((id) {
+              final selected = _goals.contains(id);
+              return ChoiceChip(
+                label: Text(_goalLabel(id)),
+                selected: selected,
+                onSelected: (value) {
+                  setState(() {
+                    if (value) {
+                      _goals.add(id);
+                    } else {
+                      _goals.remove(id);
+                    }
+                  });
+                },
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 28),
+          FilledButton(
+            onPressed: _saving ? null : _save,
+            child: _saving
+                ? const SizedBox(
+                    height: 22,
+                    width: 22,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Save'),
+          ),
+        ],
+      ),
     );
   }
 }
