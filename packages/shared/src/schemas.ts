@@ -30,8 +30,11 @@ export type ScheduleBlock = z.infer<typeof ScheduleBlock>;
 
 // ── User Profile ────────────────────────────────────────────────────
 
-export const FitnessLevel = z.enum(["beginner", "intermediate", "advanced"]);
+export const FitnessLevel = z.enum(["beginner", "intermediate", "advanced", "athlete"]);
 export type FitnessLevel = z.infer<typeof FitnessLevel>;
+
+export const WorkoutSplit = z.enum(["ppl", "upper_lower", "full_body", "bro_split"]);
+export type WorkoutSplit = z.infer<typeof WorkoutSplit>;
 
 export const UserProfile = z.object({
   uid: z.string(),
@@ -40,6 +43,7 @@ export const UserProfile = z.object({
   photoUrl: z.string().url().optional(),
   fitnessLevel: FitnessLevel.default("beginner"),
   goals: z.array(z.string().max(100)).max(10).default([]),
+  workoutSplit: WorkoutSplit.optional(),
   preferredFacilities: z.array(z.string().max(100)).max(10).default([]),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),

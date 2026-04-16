@@ -98,4 +98,68 @@ describe("generateDailyPlan", () => {
 
     expect(plan.items.length).toBeGreaterThan(0);
   });
+
+  it("uses workoutSplit when set to ppl", () => {
+    const pplProfile: UserProfileType = {
+      ...mockProfile,
+      workoutSplit: "ppl",
+    };
+    const plan = generateDailyPlan("test-user", pplProfile, mockSchedule, date);
+    const gymItems = plan.items.filter((i) => i.category === "gym");
+
+    expect(gymItems.length).toBeGreaterThan(0);
+    const hasPPL = gymItems.some((i) =>
+      i.activity.toLowerCase().includes("push") &&
+      i.activity.toLowerCase().includes("pull") &&
+      i.activity.toLowerCase().includes("legs")
+    );
+    expect(hasPPL).toBe(true);
+  });
+
+  it("uses workoutSplit when set to full_body", () => {
+    const fullBodyProfile: UserProfileType = {
+      ...mockProfile,
+      workoutSplit: "full_body",
+    };
+    const plan = generateDailyPlan("test-user", fullBodyProfile, mockSchedule, date);
+    const gymItems = plan.items.filter((i) => i.category === "gym");
+
+    expect(gymItems.length).toBeGreaterThan(0);
+    const hasFullBody = gymItems.some((i) =>
+      i.activity.toLowerCase().includes("full body")
+    );
+    expect(hasFullBody).toBe(true);
+  });
+
+  it("uses fallback workout when workoutSplit is not set", () => {
+    const noSplitProfile: UserProfileType = {
+      ...mockProfile,
+      workoutSplit: undefined,
+    };
+    const plan = generateDailyPlan("test-user", noSplitProfile, mockSchedule, date);
+    const gymItems = plan.items.filter((i) => i.category === "gym");
+
+    expect(gymItems.length).toBeGreaterThan(0);
+    // Intermediate fallback should mention push/pull
+    const hasFallback = gymItems.some((i) =>
+      i.activity.toLowerCase().includes("push/pull")
+    );
+    expect(hasFallback).toBe(true);
+  });
+
+  it("includes athlete intensity for athlete fitness level", () => {
+    const athleteProfile: UserProfileType = {
+      ...mockProfile,
+      fitnessLevel: "athlete",
+      workoutSplit: "upper_lower",
+    };
+    const plan = generateDailyPlan("test-user", athleteProfile, mockSchedule, date);
+    const gymItems = plan.items.filter((i) => i.category === "gym");
+
+    expect(gymItems.length).toBeGreaterThan(0);
+    const hasAthlete = gymItems.some((i) =>
+      i.activity.toLowerCase().includes("high intensity")
+    );
+    expect(hasAthlete).toBe(true);
+  });
 });

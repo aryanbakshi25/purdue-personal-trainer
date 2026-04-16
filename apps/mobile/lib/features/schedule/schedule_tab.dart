@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../providers/schedule_provider.dart';
+import '../../shared/utils/category_icons.dart';
 
 class ScheduleTab extends ConsumerWidget {
   const ScheduleTab({super.key});
@@ -73,7 +74,7 @@ class ScheduleTab extends ConsumerWidget {
                     (block) => Card(
                       margin: const EdgeInsets.only(bottom: 4),
                       child: ListTile(
-                        leading: _categoryIcon(block.category),
+                        leading: Icon(iconForCategory(block.category)),
                         title: Text(block.title),
                         subtitle: Text(
                           '${block.startTime} - ${block.endTime}'
@@ -101,20 +102,5 @@ class ScheduleTab extends ConsumerWidget {
         child: const Icon(Icons.add),
       ),
     );
-  }
-
-  Widget _categoryIcon(String category) {
-    switch (category) {
-      case 'class':
-        return const Icon(Icons.school);
-      case 'work':
-        return const Icon(Icons.work);
-      case 'gym':
-        return const Icon(Icons.fitness_center);
-      case 'meal':
-        return const Icon(Icons.restaurant);
-      default:
-        return const Icon(Icons.event);
-    }
   }
 }
