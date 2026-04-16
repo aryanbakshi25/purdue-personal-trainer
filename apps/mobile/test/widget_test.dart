@@ -3,6 +3,7 @@ import 'package:purdue_personal_trainer/models/schedule_block.dart';
 import 'package:purdue_personal_trainer/models/daily_plan.dart';
 import 'package:purdue_personal_trainer/models/facility_usage.dart';
 import 'package:purdue_personal_trainer/models/chat_message.dart';
+import 'package:purdue_personal_trainer/models/user_profile.dart';
 
 void main() {
   group('ScheduleBlock', () {
@@ -99,6 +100,103 @@ void main() {
       expect(userMsg.isAssistant, false);
       expect(assistantMsg.isUser, false);
       expect(assistantMsg.isAssistant, true);
+    });
+  });
+
+  group('UserProfile', () {
+    test('serializes to/from JSON with all fields', () {
+      final profile = UserProfile(
+        uid: 'user-123',
+        displayName: 'Test User',
+        email: 'test@purdue.edu',
+        photoUrl: 'https://example.com/photo.jpg',
+        fitnessLevel: 'advanced',
+        goals: ['build_muscle', 'lose_weight'],
+        workoutSplit: 'ppl',
+        preferredFacilities: ['CoRec'],
+        createdAt: '2025-01-15T10:00:00Z',
+        updatedAt: '2025-01-15T10:00:00Z',
+      );
+
+      final json = profile.toJson();
+      final restored = UserProfile.fromJson(json);
+
+      expect(restored.uid, 'user-123');
+      expect(restored.displayName, 'Test User');
+      expect(restored.email, 'test@purdue.edu');
+      expect(restored.photoUrl, 'https://example.com/photo.jpg');
+      expect(restored.fitnessLevel, 'advanced');
+      expect(restored.goals, ['build_muscle', 'lose_weight']);
+      expect(restored.workoutSplit, 'ppl');
+      expect(restored.preferredFacilities, ['CoRec']);
+    });
+
+    test('handles null workoutSplit', () {
+      final profile = UserProfile(
+        uid: 'user-123',
+        displayName: 'Test User',
+        email: 'test@purdue.edu',
+        createdAt: '2025-01-15T10:00:00Z',
+        updatedAt: '2025-01-15T10:00:00Z',
+      );
+
+      final json = profile.toJson();
+      expect(json['workoutSplit'], isNull);
+
+      final restored = UserProfile.fromJson(json);
+      expect(restored.workoutSplit, isNull);
+    });
+
+    test('applies default values for optional fields', () {
+      final json = {
+        'uid': 'user-123',
+        'displayName': 'Test User',
+        'email': 'test@purdue.edu',
+        'createdAt': '2025-01-15T10:00:00Z',
+        'updatedAt': '2025-01-15T10:00:00Z',
+      };
+
+      final profile = UserProfile.fromJson(json);
+
+      expect(profile.fitnessLevel, 'beginner');
+      expect(profile.goals, isEmpty);
+      expect(profile.workoutSplit, isNull);
+      expect(profile.preferredFacilities, isEmpty);
+      expect(profile.photoUrl, isNull);
+    });
+
+    test('preserves goal priority order', () {
+      final profile = UserProfile(
+        uid: 'user-123',
+        displayName: 'Test User',
+        email: 'test@purdue.edu',
+        goals: ['improve_endurance', 'build_muscle', 'lose_weight'],
+        createdAt: '2025-01-15T10:00:00Z',
+        updatedAt: '2025-01-15T10:00:00Z',
+      );
+
+      final json = profile.toJson();
+      final restored = UserProfile.fromJson(json);
+
+      expect(restored.goals[0], 'improve_endurance');
+      expect(restored.goals[1], 'build_muscle');
+      expect(restored.goals[2], 'lose_weight');
+    });
+
+    test('serializes all workout split values', () {
+      for (final split in ['ppl', 'upper_lower', 'full_body', 'bro_split']) {
+        final profile = UserProfile(
+          uid: 'user-123',
+          displayName: 'Test',
+          email: 'test@purdue.edu',
+          workoutSplit: split,
+          createdAt: '2025-01-15T10:00:00Z',
+          updatedAt: '2025-01-15T10:00:00Z',
+        );
+
+        final restored = UserProfile.fromJson(profile.toJson());
+        expect(restored.workoutSplit, split);
+      }
     });
   });
 }
