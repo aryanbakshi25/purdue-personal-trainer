@@ -19,7 +19,7 @@ Pick a task, assign yourself by adding your name to the **Owner** column, and cr
 |-------|---------|
 | **Branch** | `feat/category-icon-mapper` |
 | **Difficulty** | Easy |
-| **Owner** | _unclaimed_ |
+| **Owner** | Neha Jain |
 | **Files** | Create `lib/shared/utils/category_icons.dart`, update `lib/features/schedule/schedule_tab.dart` |
 
 **What to do:** There's inline icon-mapping logic in `schedule_tab.dart` (the `_categoryIcon` method). Extract it into a shared utility function `IconData iconForCategory(String category)` that maps categories (`class`, `club`, `study`, `workout`, `work`, `meal`, `other`) to Material Icons. Import and use it everywhere schedule categories appear.
