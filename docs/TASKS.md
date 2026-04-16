@@ -179,3 +179,152 @@ All other tasks are independent and can be done in parallel.
 | **In Progress** (Name) | Someone is working on it |
 | **In Review** (Name) | PR is open, awaiting review |
 | **Done** | Merged into `dev` |
+
+---
+
+# Task Board — Sprint 2
+
+Sprint 2 focuses on closing the remaining feature gaps identified after Sprint 1: wiring missing edit handlers, adding ICS import UI, persisting chat history, upgrading plan generation to use Gemini, and general polish.
+
+## How to Claim a Task
+
+1. Open a PR that edits this file — put your name in the Owner column.
+2. Create your branch: `git checkout -b feat/<branch-name>` (off `dev`).
+3. When done, open a PR targeting `dev`. See [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+---
+
+## Flutter Tasks (Frontend)
+
+### Task 11: Edit Workout Split Handler
+| Field | Details |
+|-------|---------|
+| **Branch** | `feat/edit-workout-split` |
+| **Difficulty** | Easy–Medium |
+| **Owner** | _unclaimed_ |
+| **Files** | `lib/features/profile/profile_tab.dart` |
+
+**What to do:** The "Edit" button next to Workout Split in the Profile tab has a `// TODO` comment and no action. Wire it to open a bottom sheet (similar to the fitness goals selector from Task 4) that lets users pick their preferred workout split (PPL / Upper-Lower / Full Body / Bro Split) using `ChoiceChip` widgets. Save the updated value to the `UserProfile` document in Firestore.
+
+**What you'll learn:** Bottom sheets, `ChoiceChip` widgets, Firestore updates, reading existing provider patterns.
+
+---
+
+### Task 12: Edit Preferred Facilities Handler
+| Field | Details |
+|-------|---------|
+| **Branch** | `feat/edit-preferred-facilities` |
+| **Difficulty** | Easy–Medium |
+| **Owner** | _unclaimed_ |
+| **Files** | `lib/features/profile/profile_tab.dart` |
+
+**What to do:** The "Edit" button next to Preferred Facilities in the Profile tab has a `// TODO` comment and no action. Wire it to open a bottom sheet listing available Purdue RecWell facilities (CoRec, France A. Córdova Recreational Sports Center, etc.) as `FilterChip` widgets. Save the updated list to the `UserProfile` document in Firestore.
+
+**What you'll learn:** `FilterChip` for multi-select, bottom sheets, Firestore array updates.
+
+---
+
+### Task 13: Schedule Block Deletion
+| Field | Details |
+|-------|---------|
+| **Branch** | `feat/schedule-block-deletion` |
+| **Difficulty** | Easy |
+| **Owner** | _unclaimed_ |
+| **Files** | `lib/features/schedule/schedule_tab.dart` |
+
+**What to do:** Add a delete affordance to each schedule block in the schedule tab — either a trailing delete icon on each list tile or a swipe-to-dismiss gesture. Show a confirmation dialog (`AlertDialog`) before deleting. On confirmation, delete the document from Firestore at `users/{uid}/scheduleBlocks/{blockId}`.
+
+**What you'll learn:** `AlertDialog`, `Dismissible` widget or `IconButton`, Firestore deletes.
+
+---
+
+### Task 14: ICS Import UI
+| Field | Details |
+|-------|---------|
+| **Branch** | `feat/ics-import-ui` |
+| **Difficulty** | Medium |
+| **Owner** | _unclaimed_ |
+| **Files** | `lib/features/schedule/schedule_tab.dart`, create `lib/features/schedule/ics_import_sheet.dart` |
+
+**What to do:** The backend `POST /api/schedule/import-ics` endpoint is ready (Task 10) but there's no UI to trigger it. Add an "Import Calendar" button to the Schedule tab. Tapping it opens a bottom sheet where users can paste an ICS URL or pick a `.ics` file from their device. Call the API endpoint and show a success/error `SnackBar` with the count of imported blocks.
+
+**What you'll learn:** File picker (`file_picker` package), HTTP requests, bottom sheets, `SnackBar` feedback.
+
+---
+
+### Task 15: Chat History Persistence
+| Field | Details |
+|-------|---------|
+| **Branch** | `feat/chat-history` |
+| **Difficulty** | Medium–Hard |
+| **Owner** | _unclaimed_ |
+| **Files** | `lib/features/chat/chat_tab.dart`, create `lib/providers/chat_provider.dart` |
+
+**What to do:** Currently chat messages are lost on app restart. Create a Firestore collection at `users/{uid}/chatMessages/` and persist each message (role, content, timestamp) after it's sent or received. Load the last 50 messages on chat tab open using a `StreamProvider`. Add a "Clear chat" button in the app bar that deletes all messages in the collection.
+
+**What you'll learn:** Firestore subcollections, `StreamProvider`, ordering queries, batch deletes.
+
+---
+
+### Task 16: Typing Indicator Animation
+| Field | Details |
+|-------|---------|
+| **Branch** | `feat/typing-indicator` |
+| **Difficulty** | Easy–Medium |
+| **Owner** | _unclaimed_ |
+| **Files** | `lib/features/chat/chat_tab.dart` |
+
+**What to do:** The chat tab has a placeholder for a typing indicator but no animation. Build a `TypingIndicator` widget that shows three animated dots (staggered fade or bounce using `AnimationController`) while the AI response is loading. Display it at the bottom of the message list whenever the `isLoading` state is true.
+
+**What you'll learn:** `AnimationController`, `AnimatedBuilder`, staggered animations, custom widgets.
+
+---
+
+### Task 17: Facility Usage Relative Timestamps
+| Field | Details |
+|-------|---------|
+| **Branch** | `feat/facility-relative-timestamps` |
+| **Difficulty** | Easy |
+| **Owner** | _unclaimed_ |
+| **Files** | `lib/features/today/today_tab.dart` |
+
+**What to do:** Facility usage cards currently show raw ISO timestamps. Replace them with relative strings like "Updated 3 min ago" using the `intl` or `timeago` package. Refresh the relative timestamp every minute using a `Timer.periodic` so it stays accurate without re-fetching data.
+
+**What you'll learn:** Date formatting, `Timer.periodic`, `setState` for periodic UI updates.
+
+---
+
+## TypeScript Task (Backend)
+
+### Task 18: Gemini-Powered Plan Generation
+| Field | Details |
+|-------|---------|
+| **Branch** | `feat/gemini-plan-generation` |
+| **Difficulty** | Hard |
+| **Owner** | _unclaimed_ |
+| **Files** | `functions/src/services/plan-generator.ts`, `functions/src/routes/plan.ts` |
+
+**What to do:** The current plan generator (`plan-generator.ts`) uses simple rule-based heuristics to slot generic activities into free time blocks. Replace the core logic with a Gemini API call (via the existing Vertex AI client used in `functions/src/routes/chat.ts`). Build a prompt that includes the user's fitness level, goals, workout split preference, and schedule for the day, then parse Gemini's structured JSON response into `PlanItem` objects. Keep the rule-based fallback in case the Gemini call fails. This is a **TypeScript/Node.js** task — no Flutter needed.
+
+**What you'll learn:** Prompt engineering, Vertex AI / Gemini SDK, JSON response parsing, fallback patterns.
+
+---
+
+## Task Dependencies
+
+```
+Task 11 (Edit Workout Split) ──────────────────────────────────► Task 18 (Gemini Plan) uses profile data
+Task 12 (Edit Preferred Facilities) ──────────────────────────► Task 18 (Gemini Plan) uses facility prefs
+
+Task 14 (ICS Import UI) depends on Task 10 (ICS Import Endpoint) ── already merged in Sprint 1
+
+Task 15 (Chat History) ──► Task 16 (Typing Indicator) shares isLoading state
+
+Task 13 (Schedule Deletion) and Task 17 (Relative Timestamps) are independent.
+```
+
+**Recommended pairing:**
+- Tasks 11 & 12 are similar in structure — good to do back-to-back or pair on them.
+- Task 14 requires Task 10 to be merged (Sprint 1) — verify before starting.
+- Task 15 & 16 should coordinate since they touch the same file and share loading state.
+- Task 18 can be done in parallel with all frontend tasks.
