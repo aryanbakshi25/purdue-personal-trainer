@@ -7,6 +7,7 @@ class UserProfile {
     this.photoUrl,
     this.fitnessLevel = 'beginner',
     this.goals = const [],
+    this.workoutSplit,
     this.preferredFacilities = const [],
     required this.createdAt,
     required this.updatedAt,
@@ -19,6 +20,7 @@ class UserProfile {
       email: json['email'] as String,
       photoUrl: json['photoUrl'] as String?,
       fitnessLevel: json['fitnessLevel'] as String? ?? 'beginner',
+      workoutSplit: json['workoutSplit'] as String?,
       goals: (json['goals'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
@@ -38,6 +40,7 @@ class UserProfile {
   final String? photoUrl;
   final String fitnessLevel;
   final List<String> goals;
+  final String? workoutSplit;
   final List<String> preferredFacilities;
   final String createdAt;
   final String updatedAt;
@@ -50,6 +53,7 @@ class UserProfile {
       'photoUrl': photoUrl,
       'fitnessLevel': fitnessLevel,
       'goals': goals,
+      'workoutSplit': workoutSplit,
       'preferredFacilities': preferredFacilities,
       'createdAt': createdAt,
       'updatedAt': updatedAt,

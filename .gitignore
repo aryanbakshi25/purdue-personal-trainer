@@ -48,3 +48,7 @@ Thumbs.db
 # Coverage
 coverage/
 lcov.info
+apps/mobile/pubspec.lock
+apps/mobile/macos/Podfile.lock
+apps/mobile/pubspec.lock
+*.lock
