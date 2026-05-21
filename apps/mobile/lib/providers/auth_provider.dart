@@ -47,7 +47,7 @@ class AuthService {
       );
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        return await _auth.createUserWithEmailAndPassword(
+        return _auth.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );

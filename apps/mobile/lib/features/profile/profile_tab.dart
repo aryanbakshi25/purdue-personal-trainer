@@ -282,7 +282,7 @@ class ProfileTab extends ConsumerWidget {
                       ],
                     ),
                   );
-                  if (confirmed == true && user != null) {
+                  if (confirmed == true) {
                     await FirebaseFirestore.instance
                         .collection('users')
                         .doc(user.uid)

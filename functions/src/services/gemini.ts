@@ -22,7 +22,6 @@ const MODEL = "gemini-2.0-flash";
  * See: https://firebase.google.com/docs/functions/config-env
  */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface UserContext {
   profile: Record<string, unknown> | null;
   scheduleBlocks: Record<string, unknown>[];

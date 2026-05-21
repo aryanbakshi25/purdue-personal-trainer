@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 
 import '../models/daily_plan.dart';
 import 'api_provider.dart';
+import 'schedule_provider.dart';
+import 'user_profile_provider.dart';
 
 /// Manages today's [DailyPlan] — loads from Firestore on init,
 /// and generates a new plan via the backend API on demand.
@@ -44,9 +46,22 @@ class PlanNotifier extends AsyncNotifier<DailyPlan?> {
       final uid = FirebaseAuth.instance.currentUser?.uid;
       if (uid == null) throw Exception('User not signed in.');
 
+      // Gather profile and schedule to send to the backend.
+      final profile = ref.read(userProfileProvider).valueOrNull;
+      if (profile == null) throw Exception('Profile not loaded yet.');
+
+      final scheduleBlocks =
+          ref.read(scheduleBlocksProvider).valueOrNull ?? [];
+      final today = _dateFormat.format(DateTime.now());
+
       final api = ref.read(apiClientProvider);
       final response = await api.post<Map<String, dynamic>>(
         '/api/plan/generate',
+        data: {
+          'profile': profile.toJson(),
+          'scheduleBlocks': scheduleBlocks.map((b) => b.toJson()).toList(),
+          'date': today,
+        },
       );
 
       final plan = DailyPlan.fromJson(response.data!);
